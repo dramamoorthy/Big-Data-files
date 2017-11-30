@@ -1,0 +1,119 @@
+create table d2(txdate string,custid string,age string,area string, category string,prodid string,qty int,cost bigint,sales bigint)row format delimited fields terminated by '\;' stored as textfile;
+
+
+insert overwrite table d2 select * from d1 where sales>0 and cost>0;
+LOAD DATA LOCAL INPATH '/home/hduser/Desktop/D01' INTO TABLE d1;
+
+1)select month(txdate),count(*) from d1 group by month(txdate);
+
+1	216864
+2	199039
+11	223622
+12	178216
+
+2) select * from d1 where sales<=0 or cost<=0;
+
+a1a) select custid,sales,txdate from d2 a where month(a.txdate)=12 and sales in (select max(sales) from d2 b where month(b.txdate)=12);
+
+custid	sales	txdate
+02131221  	70589	2000-12-27 00:00:00
+02134819  	70589	2000-12-27 00:00:00
+
+
+
+a1b) select custid,txdate,sales from d2 order by sales desc limit 1;
+
+01622362  	2001-02-17 00:00:00	444000
+
+a2) 
+
+select prodid, sum(sales-cost) as profit from d2 group by prodid order by profit desc limit 10;
+
+
+4909978112950	71312
+8712045008539	46586
+20564100     	38699
+4710628131012	34429
+0729238191921	33645
+4902430493437	32970
+20556433     	31862
+
+select category, sum(sales-cost) as profit from d2 group by category order by profit desc limit 10;
+
+320402	356563
+560402	340999
+560201	320217
+100205	201537
+530101	184621
+530110	161600
+470103	150775
+530105	135059
+
+a3)   select prodid,round ((sum(sales)-sum(cost))/sum(cost)*100,2) as margin from d2 group by prodid order by margin desc limit 5;
+prodid	margin
+20562687     	3733.33
+4714298810208	279.33
+4714298808236	197.73
+4711821100584	160.91
+20454388     	142.5
+
+
+b)a) select prodid,sum(sales)as sale from d2 group by prodid order by sale desc limit 4;
+
+prodid	sale
+8712045008539	1540503
+4710628131012	675112
+4710114128038	514601
+4711588210441	491292
+
+
+b)b) select prodid,sum(sales)as sale from d2 where month(txdate)=1 group by prodid order by sale desc limit 4 ;
+prodid	sale
+8712045008539	611874
+4710628119010	278230
+4710628131012	227840
+4719090900065	225456
+
+select prodid,sum(sales)as sale from d2 where month(txdate)=2 group by prodid order by sale desc limit 4 ;
+prodid	sale
+4711588210441	444000
+0022972004664	213803
+4710036003581	210339
+4710265849066	194669
+
+select prodid,sum(sales)as sale from d2 where month(txdate)=11 group by prodid order by sale desc limit 4 ;
+
+prodid	sale
+20553418     	470501
+8712045008539	460282
+4902430493437	271542
+4710628131012	188149
+
+select prodid,sum(sales)as sale from d2 where month(txdate)=12 group by prodid order by sale desc limit 4 ;
+
+
+prodid	sale
+8712045008539	442482
+8712045000151	298013
+8712045011317	252688
+7610053910787	233383
+
+
+c)  create table table_a (age string, prodid string, totalsales bigint) row format delimited fields terminated by ',';
+
+insert overwrite table table_b select age,prodid, sum(sales-cost)as total from d2 where (sales-cost)>0 group by age, prodid having trim (age)='B' order by total desc limit 5;
+
+select * from (select age,totalsales,prodid from table_a union select age,totalsales,prodid from table_b)temp order by age, totalsales desc;
+
+temp.age	temp.totalsales	temp.prodid
+A 	12025	4711588210441
+A 	3290	20559045     
+A 	2163	4973167032060
+A 	1854	4973167738757
+A 	1776	20556433     
+B 	8452	8712045008539
+B 	6827	4710628119010
+B 	6696	7610053910787
+B 	6419	4902430493437
+B 	6364	4710628131012
+
