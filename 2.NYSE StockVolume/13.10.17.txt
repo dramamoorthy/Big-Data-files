@@ -1,0 +1,300 @@
+https://drive.google.com/open?id=0B-UpSievtnlka1JFNktEXzF0Ykk
+
+username : bigdata.batch@gmail.com
+password : bigdata@123
+
+
+install mysql on windows or ubuntu
+
+create all the 3 tables. insert all the data into the tables;
+in the orders table - month should be oct only.
+
+select month(odate) from orders;
+10
+
+125 queries
+
+Agenda for Hadoop
+-----
+1. Big data fundamentals
+2. HDFS - storage part of Hadoop
+3. MapReduce - processing layer
+4. YARN - cluster resource management
+5. Hive - SQL query tool in Hadoop
+6. Pig - scripting lang to process the data
+7. Sqoop - is a tool ingest or load data from rdbms into HDFS
+8. Flume - ingestion tool for pulling streaming data
+9. NoSQL - HBase and MongoDB
+10. Spark - in memory processing
+11. Zookeeper, Oozie
+
+what is big data?
+can we store big data in our normal RDBMS platforms
+why hadoop is required over RDBMS?
+what adv hadoop gives us?
+ HDFS - Hadoop Distributed File System
+
+2 GB 
+
+HDFS components
+1. Master Node - Namenode
+2. Slaves 
+ 
+2048 MB /128 = 16 blocks
+
+48 blocks
+6 GB
+
+Rack Awareness
+
+
+node = 10 TB - 5 % for IO opertions
+9500 GB / 128 MB
+
+Namenode is SPOF (single point of failure)
+1. Secondary Namenode - external backup - cold
+2. Standby Namenode - online backup - hot
+
+metadata files from namenode to secondary namenode (on hourly basis)
+1. edit logs
+2. FS Image files
+
+Standby Namenode
+
+ensemble of zookeeper - group
+
+one NN can hold data for upto 4000 nodes
+
+namenode federation
+
+metadata of a data for the blocks - RAM of that namenode
+
+1. create a folder on hdfs
+---------------------
+hadoop fs -mkdir /niit -[ this folder created under root of HDFS]
+
+
+
+2. upload a sample file on hdfs
+------------------------
+nano sample.txt [ this file to be created in home dir on local sys  i.e. /home/hduser]
+insert some lines in the file
+save the file
+
+hadoop fs -put sample.txt /niit
+hadoop fs -put NYSE.csv /niit
+
+what is the block size for each of these files?
+
+syntax is
+--------
+hadoop fs -put [source file] [destination path of hdfs]
+
+what is a root dir [/] 
+root dir is a highest level dir in linux file system
+hadoop also uses the same file system like linux
+
+niit is created under of hdfs
+
+the path to access the hdfs-site.xml is
+cd /usr/local/hadoop/etc/hadoop
+nano hdfs-site.xml
+
+after saving the file. restart the hadoop services
+stop-all.sh
+start-all.sh
+
+inside configuartion
+---------------
+<property>
+<name>dfs.blocksize</name>
+<value>27m</value>
+<property>
+
+on your local machine
+cp NYSE.csv NYSE1.csv
+
+hadoop fs -put NYSE1.csv /niit
+now this file will have a smaller block size
+
+hadoop fsck /niit/NYSE1.csv -files -blocks -locations
+
+for 2 blocks we 2 separate block ids
+
+we can have diff repl factor for each file
+
+block pool id is the reference number of namenode
+
+if you upload the 186 MB file of hadoop-2.6.0.tar.gz 
+how many blocks
+keep the block size as 27 mb
+pl do and confirm
+
+run the fsck command on the same file
+
+how to delete a file on hdfs
+-----------------------
+hadoop fs -rm /niit/sample.txt
+
+
+hadoop fs -mkdir /niit2
+
+move the file from one folder to other folder
+-----------
+hadoop fs -mv /niit/NYSE1.csv /niit2
+
+pl check the file under the new folder
+
+how to append data to an existing file on hdfs
+-------------------------------------
+hadoop fs -put sample.txt /niit [again because the file was deleted]
+
+create a local file with sample2.txt
+put some text
+save the file
+
+hadoop fs -appendToFile sample2.txt /niit/sample.txt
+
+hadoop fs -cat /niit/sample.txt [ this file will have data from both the files]
+
+cat command displays the content of the file
+
+how to delete a folder on hdfs
+-------------------------
+hadoop fs -rmr /niit2
+
+renaming a folder on hdfs
+--------------------
+hadoop fs -mv /niit /niit2
+
+how to copy a file from one hdfs location to the other
+-------------------------------------------
+hadoop fs -mkdir /niit
+hadoop fs -put NYSE1.csv /niit
+
+hadoop fs -mkdir /niit3
+
+hadoop fs -cp /niit/NYSE1.csv /niit3 [ cp will copy the file from hdfs to hdfs]
+
+-put
+-copyFromLocal
+
+
+replica factor can be changed for a file
+--------------------------------
+hadoop fs -setrep 2 /niit/NYSE1.csv
+
+on a single node cannot have 2 replicas of the same block
+
+renaming a file
+-----------
+hadoop mv /niit2/sample.txt /niit2/sample2.txt
+
+
+ramit if  file has 2 blocks - with a single repl fact [multi node]
+we change the repl factor to 2
+
+how many blocks should we have?
+4
+
+on a single node 2 replicas cannot be placed on one datanode
+hence it is showing 2 replicas missing
+
+2/4 is 2 
+
+
+palvisha - is there any point to have 2 copies of same replica on same node
+answer is NO
+
+how to download the file from hdfs to local fs
+-------------------------------------
+hadoop fs -get /niit2/sample2.txt /home/hduser/sample3.txt
+
+OR
+
+hadoop fs -copyToLocal /niit2/sample2.txt /home/hduser/sample3.txt
+
+check the file content on local fs
+---------------------------
+cat sample3.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
