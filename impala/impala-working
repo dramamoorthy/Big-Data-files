@@ -1,0 +1,34 @@
+0. create a database first
+0. use database_name
+1. create the tables like customer first.
+2. upload the data on hdfs under /user/cloudera
+3. hadoop fs -chmod -R 777 /user/cloudera/custs (hadoop command on a separate terminal)
+4. load data inpath '/user/cloudera/custs' overwrite into table customer;
+5. select * from customer;
+
+similarly u can load other tables like txnrecords and nyse
+
+sudo -u hdfs hadoop fs -chown -R cloudera:cloudera /user/hive/warehouse/
+
+sudo -u hdfs hadoop fs -chmod -R 777 /user/hive/warehouse/
+
+sudo -u hdfs hadoop fs -chmod -R 777 /user/cloudera
+sudo -u hdfs hadoop fs -chown -R cloudera:cloudera /user/cloudera
+
+drop table customer;
+
+hadoop fs -mkdir /user/cloudera/customer
+hadoop fs -put custs /user/cloudera/customer
+
+
+create external table customer(custno string, firstname string, lastname string, age int,profession string)
+row format delimited
+fields terminated by ','
+stored as textfile 
+location '/user/cloudera/customer';
+
+
+
+
+
+
